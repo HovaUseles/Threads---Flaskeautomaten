@@ -6,11 +6,26 @@ using System.Threading.Tasks;
 
 namespace Threads___Flaskeautomaten
 {
+    /// <summary>
+    /// The bottle producer responsible for producing bottles.
+    /// </summary>
     internal class Producer
     {
-        private int runningNumber = 1000;
-        private int produceTime;
         private Random random = new Random();
+        
+        /// <summary>
+        /// Bottle ID number, increments for every produces bottle.
+        /// </summary>
+        private int runningNumber = 1000;
+
+        /// <summary>
+        /// Time it takes for the producer to produce a bottle.
+        /// </summary>
+        private int produceTime;
+
+        /// <summary>
+        /// Thread running the producer operations.
+        /// </summary>
         private Thread thread;
         public Thread GetThread
         {
@@ -18,7 +33,9 @@ namespace Threads___Flaskeautomaten
             private set { thread = value; }
         }
 
-
+        /// <summary>
+        /// Inialize an instance of Producer. It randomnizes a produceTime.
+        /// </summary>
         public Producer()
         {
             produceTime = random.Next(400, 1600);
@@ -27,10 +44,17 @@ namespace Threads___Flaskeautomaten
             thread.Priority = ThreadPriority.Normal;
         }
 
+        /// <summary>
+        /// Start the producer thread
+        /// </summary>
         public void StartProducing()
         {
             thread.Start();
         }
+
+        /// <summary>
+        /// Runs the loop of the bottle production. 
+        /// </summary>
         private void ProductionController()
         {
             while (Program.running)
@@ -58,6 +82,10 @@ namespace Threads___Flaskeautomaten
             }
         }
 
+        /// <summary>
+        /// Creates adn returns a bottle instance.
+        /// </summary>
+        /// <returns>Bottle. Either Beer or Soda</returns>
         private Bottle ProduceBottle()
         {
             int bottleChoice = random.Next(0, 100);

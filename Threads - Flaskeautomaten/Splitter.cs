@@ -8,15 +8,26 @@ namespace Threads___Flaskeautomaten
 {
     internal class Splitter
     {
-        private int splitTime;
         private Random random = new Random();
+
+        /// <summary>
+        /// Time it takes for the splitter to sort a bottle.
+        /// </summary>
+        private int splitTime;
+        
+        /// <summary>
+        /// The thread that runs the splitter operation.
+        /// </summary>
         private Thread thread;
-        public Thread GetThread
+       public Thread GetThread
         {
             get { return thread; }
             private set { thread = value; }
         }
 
+        /// <summary>
+        /// Inializes an instance of Splitter
+        /// </summary>
         public Splitter()
         {
             splitTime = random.Next(50, 100);
@@ -25,15 +36,19 @@ namespace Threads___Flaskeautomaten
             thread.Priority = ThreadPriority.Highest;
         }
         
+        /// <summary>
+        /// Starts the splitter thread.
+        /// </summary>
         public void StartSplitting()
         {
             thread.Start();
         }
 
+        /// <summary>
+        /// Controls the loop the splitter thread runs.
+        /// </summary>
         private void SplitterController()
         {
-            Bottle bottle;
-
             while (Program.running)
             {
                 // Attempt to enter the production conveyor
@@ -43,7 +58,7 @@ namespace Threads___Flaskeautomaten
                     if (Program.producerConveyor.Count > 0)
                     {
                         // Only grab a bottle and release the lock on production conveyor to enable producer to keep producing
-                        bottle = Program.producerConveyor.Dequeue();
+                        Bottle bottle = Program.producerConveyor.Dequeue();
                         Monitor.Pulse(Program.producerConveyor);
                         Monitor.Exit(Program.producerConveyor);
 
@@ -60,6 +75,10 @@ namespace Threads___Flaskeautomaten
             }
         }
 
+        /// <summary>
+        /// Sort a bottle to its queue.
+        /// </summary>
+        /// <param name="bottle"></param>
         private void SortBottle(Bottle bottle)
         {
             bool success = false;
@@ -79,6 +98,12 @@ namespace Threads___Flaskeautomaten
             }
         }
 
+        /// <summary>
+        /// Attempts to add a bottle to a queue. Returns whether is was successful or not.
+        /// </summary>
+        /// <param name="bottle"></param>
+        /// <param name="queue"></param>
+        /// <returns>Whether or not it could access the conveyor queue.</returns>
         private bool AddToQueue(Bottle bottle, Queue<Bottle> queue)
         {
             // Attempts access to queue
@@ -89,7 +114,7 @@ namespace Threads___Flaskeautomaten
                     // If theres room on beer/soda conveyor
                     Console.WriteLine("Splitter adding [{0}] to {1} conveyor", bottle.Number, bottle.Type);
                     // Wait for the amount of time it takes Splitter to move bottle
-                    Thread.Sleep(splitTime);
+                    //Thread.Sleep(splitTime);
                     queue.Enqueue(bottle);
                     Console.WriteLine("Bottles on {0} conveyor: {1}", bottle.Type, queue.Count);
 
@@ -108,10 +133,13 @@ namespace Threads___Flaskeautomaten
             else return false;
         }
 
-        // Notifies that the queue is released and the splitter is waiting.
+        /// <summary>
+        /// Notifies that the queue is released and the splitter is waiting.
+        /// </summary>
+        /// <param name="queue"></param>
         private void Wait(Queue<Bottle> queue)
         {
-            Console.WriteLine("Splitters is waiting.....");
+            Console.WriteLine("Splitter is waiting.....");
             Monitor.Pulse(queue);
             Monitor.Wait(queue, Program.waitTimeout);
         }

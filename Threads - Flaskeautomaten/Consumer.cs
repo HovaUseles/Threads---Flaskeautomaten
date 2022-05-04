@@ -57,7 +57,7 @@ namespace Threads___Flaskeautomaten
             thread = new Thread(ConsumeController);
             thread.Name = type + " Consumer";
             thread.Priority = ThreadPriority.BelowNormal;
-            consumeTime = random.Next(2500, 5000);
+            consumeTime = random.Next(5000, 10000);
         }
         /// <summary>
         /// Method to start the consumer thread.
